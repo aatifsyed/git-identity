@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "git-identity"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+xdg = "^5.1.0"
+argcomplete = "^1.12.3"
+jsonschema = "^3.2.0"
+dataclasses-json = "^0.5.4"
+GitPython = "^3.1.18"
+
+[tool.poetry.dev-dependencies]
+pytest = "^6.0"
+black = "^21.6b0"
+ipython = "^7.25.0"
+
+[tool.poetry.scripts]
+git-identity = 'git_identity:main'
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "info"
+filterwarnings = [
+    'ignore::marshmallow.fields.RemovedInMarshmallow4Warning',
+]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
