@@ -5,9 +5,9 @@ from pathlib import Path
 from typing import Dict
 
 import argcomplete
+import git
 from dataclasses_json import DataClassJsonMixin
 from xdg import xdg_config_home
-import git
 
 
 @dataclasses.dataclass(frozen=True)
