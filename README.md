@@ -1,4 +1,6 @@
 # `git-identity`
+Quickly set user.name and user.email for a repository, based on a config file. 
+Available on [pypi](https://pypi.org/project/git-identity/).
 ## Installation
 Recommended installation is with [`pipx`](https://pypi.org/project/pipx):
 ```bash
