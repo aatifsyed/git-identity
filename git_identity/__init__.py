@@ -36,15 +36,19 @@ EXAMPLE_JSON = r"""{
 CONFIG_FOLDER = xdg_config_home()
 
 
-def main(
-    config_file: Path = CONFIG_FOLDER.joinpath("git-identity.json"),
-    workdir: Path = Path.cwd(),
-):
+def set_identity(repo: git.Repo, identity: GitIdentity):
+    with repo.config_writer() as repo_config:
+        repo_config.set_value("user", "name", identity.name)
+        repo_config.set_value("user", "email", identity.email)
+        logger.debug(f"""{repo_config.items_all("user")=}""")
+
+
+def main(config_file: Path = CONFIG_FOLDER.joinpath("git-identity.json")):
     try:
         config: Config = Config.schema().loads(config_file.read_text())
     except Exception as e:
         logger.critical(
-            f"Error while reading config file: {e}. Please populate {config_file.absolute()} with configuration like:\n{EXAMPLE_JSON}"
+            f"Error while reading config file: {e}.\nPlease populate {config_file.absolute()} with configuration like:\n{EXAMPLE_JSON}"
         )
         raise SystemExit
 
@@ -71,14 +75,13 @@ def main(
         datefmt="%H:%M",
     )
 
-    logger.debug(args)
+    logger.debug(f"{args=}")
+    logger.debug(f"{config_file.absolute()=}")
 
     identity: GitIdentity = config.identities[args.alias]
+    logger.debug(f"{identity=}")
 
-    repo = git.Repo(workdir, search_parent_directories=True)
+    repo = git.Repo(Path.cwd(), search_parent_directories=True)
+    logger.debug(f"{repo=}")
 
-    with repo.config_writer() as repo_config:
-        logger.debug(repo_config.read())
-        repo_config.set_value("user", "name", identity.name)
-        repo_config.set_value("user", "email", identity.email)
-        logger.debug(repo_config.read())
+    set_identity(repo=repo, identity=identity)
