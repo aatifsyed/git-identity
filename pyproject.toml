@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "git-identity"
-version = "1.0.0"
+version = "1.0.1"
 description = "Quickly set user.name and user.email for a repository, based on a config file"
 authors = ["Aatif Syed <aatifsyedyp@gmail.com>"]
 readme = "README.md"
@@ -14,12 +14,14 @@ argcomplete = "^1.12.3"
 jsonschema = "^3.2.0"
 dataclasses-json = "^0.5.4"
 GitPython = "^3.1.18"
+logging-actions = "^0.1.6"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.0"
 black = "^21.6b0"
 ipython = "^7.25.0"
 hypothesis = "^6.14.0"
+mypy = "^0.910"
 
 [tool.poetry.scripts]
 git-identity = 'git_identity:main'
@@ -27,9 +29,7 @@ git-identity = 'git_identity:main'
 [tool.pytest.ini_options]
 log_cli = true
 log_cli_level = "info"
-filterwarnings = [
-    'ignore::marshmallow.fields.RemovedInMarshmallow4Warning',
-]
+filterwarnings = ['ignore::marshmallow.fields.RemovedInMarshmallow4Warning']
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -8,9 +8,10 @@ import argcomplete
 import git
 from dataclasses_json import DataClassJsonMixin
 from xdg import xdg_config_home
+from logging_actions import log_level_action
 
 
-@dataclasses.dataclass(frozen=True)
+@dataclasses.dataclass
 class GitIdentity(DataClassJsonMixin):
     name: str
     email: str
@@ -40,10 +41,12 @@ def set_identity(repo: git.Repo, identity: GitIdentity):
     with repo.config_writer() as repo_config:
         repo_config.set_value("user", "name", identity.name)
         repo_config.set_value("user", "email", identity.email)
-        logger.debug(f"""{repo_config.items_all("user")=}""")
+        logger.debug(f"""User config for repo is now {repo_config.items_all("user")}""")
 
 
 def main(config_file: Path = CONFIG_FOLDER.joinpath("git-identity.json")):
+    logger.addHandler(logging.StreamHandler())
+
     try:
         config: Config = Config.schema().loads(config_file.read_text())
     except Exception as e:
@@ -53,35 +56,21 @@ def main(config_file: Path = CONFIG_FOLDER.joinpath("git-identity.json")):
         raise SystemExit
 
     parser = argparse.ArgumentParser(
-        description="Configure user.name and user.email for this repository"
+        description=f"Configure user.name and user.email for this repository from presets defined in `{config_file.absolute()}`"
     )
-    parser.add_argument(
-        "-l",
-        "--log-level",
-        type=lambda s: getattr(logging, s.upper()),
-        default=logging.INFO,
-    )
-    parser.add_argument(
-        "alias",
-        choices=config.identities.keys(),
-    )
+    parser.add_argument("--log-level", action=log_level_action(logger), default="info")
+    parser.add_argument("alias", choices=config.identities.keys())
 
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
-    logging.basicConfig(
-        level=args.log_level,
-        format="%(asctime)s %(levelname)5s %(name)s: %(message)s",
-        datefmt="%H:%M",
-    )
-
-    logger.debug(f"{args=}")
-    logger.debug(f"{config_file.absolute()=}")
+    logger.debug(f"Invoked with {args}")
+    logger.debug(f"Using config file at {config_file.absolute()}")
 
     identity: GitIdentity = config.identities[args.alias]
-    logger.debug(f"{identity=}")
+    logger.debug(f"Selected identity {identity} from config file")
 
     repo = git.Repo(Path.cwd(), search_parent_directories=True)
-    logger.debug(f"{repo=}")
+    logger.debug(f"Using git repo {repo}")
 
     set_identity(repo=repo, identity=identity)

@@ -17,7 +17,7 @@ This project will look for `git-identity.json` in the XDG config folder (typical
 ```json
 {
     "identities" : {
-        "alias": {
+        "<alias>": {
             "name": "Alex Ample",
             "email": "alexample@example.com"
         }
